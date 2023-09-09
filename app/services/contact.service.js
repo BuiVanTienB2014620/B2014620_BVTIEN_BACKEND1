@@ -1,4 +1,4 @@
-const  { objectId } = require("mongodb");
+const  { ObjectId } = require("mongodb");
 
 class ContactService {
     constructor(client) {
@@ -8,7 +8,7 @@ class ContactService {
 
 
 
-    extractConactData(payload) {
+    extractContactData(payload) {
         const contact = {
             name: payload.name,
             email: payload.email,
@@ -24,13 +24,13 @@ class ContactService {
     }
 
     async create(payload) {
-        const contact = this. extractConactData(payload);
+        const contact = this. extractContactData(payload);
         const result = await this.Contact.findOneAndUpdate(
             contact,
-            { $sec: { favorite: contact.favorite === true}},
+            { $set: { favorite: contact.favorite === true}},
             { returnDocument: "after", upsert: true}
 
-        ); 
+        );
         return result.value;
     }
 
@@ -46,23 +46,39 @@ class ContactService {
     }
     async findById(id)  {
         return await this.Contact.findOne({
-            _id: Object.isValid(id) ? new objectId(id) : null,
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
 
         });
     }
 
-    async update(id, payload)  {
+    // async update(id, payload)  {
+    //     const filter =  {
+    //         _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+    //     };
+    //     const update = this.extractContactData(payload);
+    //     const result = await this.Contact.findOneAndUpdate(
+    //         filter,
+    //         { $set: update },
+    //         {returnDocument: "after"}
+
+    //     );
+    //     return result.value;
+    // }
+
+    async update(id, payload) {
         const filter = {
-            _id: Object.isValid(id) ? new Object(id) : null,
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         };
-        const update = this.extractConactData(payload);
+        
+        const update = this.extractContactData(payload);
         const result = await this.Contact.findOneAndUpdate(
             filter,
             { $set: update },
-            {returnDocument: "after"}
-
+            { returnDocument: "after" }
         );
-        return result.value;
+        console.log(result)
+        return result;
+
     }
 
     async delete(id) {
@@ -72,7 +88,7 @@ class ContactService {
         return result.value;
     }
 
-    async findFavirite() {
+    async findFavorite() {
         return await this.find({ favorite: true});
     }
 
